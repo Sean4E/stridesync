@@ -1,0 +1,15 @@
+{
+  "name": "stridesync",
+  "version": "1.0.0",
+  "description": "Training tracker for athletes - plan, track, and sync your workouts",
+  "main": "index.html",
+  "scripts": {
+    "generate-icons": "node generate-icons.js"
+  },
+  "keywords": ["pwa", "training", "fitness", "tracker", "running", "marathon"],
+  "author": "Deano",
+  "license": "MIT",
+  "devDependencies": {
+    "canvas": "^3.2.1"
+  }
+}

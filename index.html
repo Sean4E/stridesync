@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StrideSync">
+    <meta name="description" content="Training tracker for athletes - plan, track, and sync your workouts">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+
+    <title>StrideSync</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========================================
+           CSS CUSTOM PROPERTIES / THEMES
+           ======================================== */
+        :root {
+            /* Theme: Midnight (Default) */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --bg-elevated: rgba(255, 255, 255, 0.08);
+            --border-primary: rgba(255, 255, 255, 0.08);
+            --border-secondary: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-muted: rgba(99, 102, 241, 0.2);
+            --success: #22c55e;
+            --success-muted: rgba(34, 197, 94, 0.2);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-muted: rgba(239, 68, 68, 0.2);
+
+            /* Activity Colors (Monochrome-friendly) */
+            --activity-run: var(--accent);
+            --activity-swim: var(--text-secondary);
+            --activity-rest: var(--text-muted);
+            --activity-race: var(--text-primary);
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px var(--accent-muted);
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            /* Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-xs: 0.75rem;
+            --font-sm: 0.875rem;
+            --font-base: 1rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.25rem;
+            --font-2xl: 1.5rem;
+            --font-3xl: 2rem;
+
+            /* Safe areas for mobile */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --nav-height: 64px;
+        }
+
+        /* Theme: Light */
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: rgba(0, 0, 0, 0.02);
+            --bg-card-hover: rgba(0, 0, 0, 0.04);
+            --bg-elevated: rgba(0, 0, 0, 0.06);
+            --border-primary: rgba(0, 0, 0, 0.08);
+            --border-secondary: rgba(0, 0, 0, 0.12);
+            --text-primary: #0f172a;
+            --text-secondary: rgba(15, 23, 42, 0.7);
+            --text-muted: rgba(15, 23, 42, 0.4);
+            --accent-muted: rgba(99, 102, 241, 0.15);
+            --success-muted: rgba(34, 197, 94, 0.15);
+            --danger-muted: rgba(239, 68, 68, 0.15);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Theme: Dim */
+        [data-theme="dim"] {
+            --bg-primary: #15202b;
+            --bg-secondary: #1c2938;
+            --bg-tertiary: #243447;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Theme: OLED */
+        [data-theme="oled"] {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #141414;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-primary: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ========================================
+           RESET & BASE
+           ======================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+        }
+
+        /* ========================================
+           ICONS (Monochrome SVG)
+           ======================================== */
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-xl { width: 32px; height: 32px; }
+
+        /* ========================================
+           LAYOUT
+           ======================================== */
+        .app {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            padding-top: calc(var(--safe-top) + var(--spacing-md));
+        }
+
+        @media (min-width: 768px) {
+            .app {
+                padding: var(--spacing-xl);
+            }
+        }
+
+        /* ========================================
+           HEADER
+           ======================================== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        /* ========================================
+           BUTTONS
+           ======================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: var(--font-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--border-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-secondary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger-muted);
+            color: var(--danger);
+            border-color: transparent;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+        }
+
+        .btn-sm {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: var(--font-xs);
+        }
+
+        /* ========================================
+           COUNTDOWN BANNER
+           ======================================== */
+        .countdown {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        @media (min-width: 640px) {
+            .countdown {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .countdown-info h2 {
+            font-size: var(--font-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .countdown-info p {
+            color: var(--text-secondary);
+            font-size: var(--font-sm);
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .countdown-unit {
+            text-align: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            min-width: 60px;
+        }
+
+        .countdown-value {
+            font-size: var(--font-2xl);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .countdown-label {
+            font-size: var(--font-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ========================================
+           STATS BAR
+           ======================================== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (min-width: 640px) {
+            .stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: var(--spacing-md);
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+        }
+
+        .stat-label {
+            font-size: var(--font-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-value {
+            font-size: var(--font-xl);
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            font-size: var(--font-sm);
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .stat-progress {
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            margin-top: var(--spacing-sm);
+            overflow: hidden;
+        }
+
+        .stat-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* ========================================
+           TABS / NAV
+           ======================================== */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: var(--spacing-xs);
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: transparent;
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: var(--font-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tab:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* ========================================
+           BOTTOM NAV (Mobile)
+           ======================================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            display: flex;
+            z-index: 100;
+        }
+
+        @media (min-width: 768px) {
+            .bottom-nav {
+                display: none;
+            }
+            body {
+                padding-bottom: 0;
+            }
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: var(--spacing-sm);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ========================================
+           WEEK CARDS
+           ======================================== */
+        .weeks {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .week-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .week-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .week-header:hover {
+            background: var(--bg-card);
+        }
+
+        .week-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .week-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .week-info h3 {
+            font-size: var(--font-base);
+            font-weight: 600;
+        }
+
+        .week-info p {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+        }
+
+        .week-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .week-stat {
+            text-align: right;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .week-stat {
+                display: block;
+            }
+        }
+
+        .week-stat-value {
+            font-size: var(--font-base);
+            font-weight: 600;
+        }
+
+        .week-stat-label {
+            font-size: var(--font-xs);
+            color: var(--text-muted);
+        }
+
+        .week-toggle {
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .week-card.collapsed .week-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .week-body {
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .week-card.collapsed .week-body {
+            display: none;
+        }
+
+        /* ========================================
+           DAY CARDS
+           ======================================== */
+        .days {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .days {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .days {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .day-card {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-primary);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 640px) {
+            .day-card {
+                border-right: 1px solid var(--border-primary);
+            }
+            .day-card:nth-child(2n) {
+                border-right: none;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .day-card {
+                border-right: 1px solid var(--border-primary);
+                border-bottom: none;
+            }
+            .day-card:last-child {
+                border-right: none;
+            }
+        }
+
+        .day-card.today {
+            background: var(--accent-muted);
+        }
+
+        .day-card.past {
+            opacity: 0.6;
+        }
+
+        .day-card.race-day {
+            background: linear-gradient(135deg, var(--accent-muted), transparent);
+            border-left: 3px solid var(--accent);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .day-name {
+            font-weight: 600;
+            font-size: var(--font-sm);
+        }
+
+        .day-date {
+            font-size: var(--font-xs);
+            color: var(--text-muted);
+        }
+
+        .day-number {
+            width: 24px;
+            height: 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-xs);
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .day-activities {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        /* ========================================
+           ACTIVITY ITEMS
+           ======================================== */
+        .activity {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--activity-run);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .activity:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .activity:active {
+            transform: scale(0.98);
+        }
+
+        .activity.completed {
+            opacity: 0.5;
+        }
+
+        .activity.completed .activity-name {
+            text-decoration: line-through;
+        }
+
+        .activity.swim { border-left-color: var(--activity-swim); }
+        .activity.rest { border-left-color: var(--activity-rest); }
+        .activity.race {
+            border-left-color: var(--activity-race);
+            background: var(--accent-muted);
+        }
+
+        .activity-check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-secondary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .activity-check.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .activity-name {
+            font-size: var(--font-sm);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-distance {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .add-activity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-sm);
+            background: transparent;
+            border: 1px dashed var(--border-primary);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: var(--font-xs);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: auto;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .add-activity:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-muted);
+        }
+
+        /* ========================================
+           CALENDAR VIEW
+           ======================================== */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .calendar-title {
+            font-size: var(--font-lg);
+            font-weight: 600;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: var(--bg-secondary);
+            text-align: center;
+            padding: var(--spacing-sm);
+            font-size: var(--font-xs);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            background: var(--bg-secondary);
+            min-height: 80px;
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        @media (min-width: 768px) {
+            .calendar-day {
+                min-height: 100px;
+            }
+        }
+
+        .calendar-day:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .calendar-day.other-month {
+            background: var(--bg-tertiary);
+            opacity: 0.5;
+        }
+
+        .calendar-day.today {
+            background: var(--accent-muted);
+        }
+
+        .calendar-day-number {
+            font-size: var(--font-sm);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .calendar-activities {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .calendar-activity {
+            font-size: 10px;
+            padding: 2px 4px;
+            background: var(--bg-card);
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-left: 2px solid var(--activity-run);
+        }
+
+        .calendar-activity.swim { border-left-color: var(--activity-swim); }
+        .calendar-activity.rest { border-left-color: var(--activity-rest); }
+        .calendar-activity.race { border-left-color: var(--activity-race); }
+        .calendar-activity.completed { opacity: 0.5; text-decoration: line-through; }
+
+        @media (max-width: 640px) {
+            .calendar-activity {
+                font-size: 0;
+                padding: 3px 0;
+                border-left-width: 0;
+                border-radius: 2px;
+                background: var(--activity-run);
+            }
+            .calendar-activity.swim { background: var(--activity-swim); }
+            .calendar-activity.rest { background: var(--activity-rest); }
+            .calendar-activity.race { background: var(--activity-race); }
+        }
+
+        /* ========================================
+           MODAL
+           ======================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 200;
+            padding: 0;
+        }
+
+        @media (min-width: 640px) {
+            .modal-overlay {
+                align-items: center;
+                padding: var(--spacing-md);
+            }
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            overflow: hidden;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        @media (min-width: 640px) {
+            .modal {
+                border-radius: var(--radius-xl);
+                animation: modalFadeIn 0.2s ease;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .modal-title {
+            font-size: var(--font-lg);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: var(--spacing-md);
+            overflow-y: auto;
+            max-height: calc(90vh - 140px);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        /* ========================================
+           FORM ELEMENTS
+           ======================================== */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--font-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: var(--font-base);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-muted);
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        /* ========================================
+           SETTINGS PANEL
+           ======================================== */
+        .settings-panel {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-secondary);
+            z-index: 300;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .settings-panel.active {
+            transform: translateX(0);
+        }
+
+        @media (min-width: 640px) {
+            .settings-panel {
+                left: auto;
+                width: 400px;
+                border-left: 1px solid var(--border-primary);
+            }
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-primary);
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 1;
+        }
+
+        .settings-body {
+            padding: var(--spacing-md);
+        }
+
+        .settings-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .settings-section-title {
+            font-size: var(--font-xs);
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Theme Selector */
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-option:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .theme-option.active {
+            border-color: var(--accent);
+            background: var(--accent-muted);
+        }
+
+        .theme-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            overflow: hidden;
+        }
+
+        .theme-preview-bg {
+            flex: 2;
+        }
+
+        .theme-preview-accent {
+            flex: 1;
+        }
+
+        .theme-name {
+            font-size: var(--font-sm);
+            font-weight: 500;
+        }
+
+        /* Accent Color Picker */
+        .accent-colors {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .accent-swatch {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .accent-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .accent-swatch.active {
+            border-color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+        }
+
+        .toggle-label {
+            font-size: var(--font-sm);
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .toggle.active {
+            background: var(--accent);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s ease;
+        }
+
+        .toggle.active .toggle-knob {
+            left: 22px;
+        }
+
+        /* ========================================
+           TOAST NOTIFICATIONS
+           ======================================== */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--safe-top) + var(--spacing-md));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 400;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            width: calc(100% - var(--spacing-md) * 2);
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.info { border-left: 3px solid var(--accent); }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========================================
+           ANALYTICS VIEW
+           ======================================== */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+        }
+
+        @media (min-width: 768px) {
+            .analytics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+        }
+
+        .chart-title {
+            font-size: var(--font-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 200px;
+        }
+
+        /* ========================================
+           UTILITY CLASSES
+           ======================================== */
+        .hidden { display: none !important; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        @media print {
+            .bottom-nav, .header-actions, .settings-panel, .toast-container, .add-activity { display: none !important; }
+            body { padding-bottom: 0; }
+            .week-card.collapsed .week-body { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span class="icon icon-lg">
+                        <svg viewBox="0 0 24 24"><path d="M13 4v16M7 8l6-4 6 4M7 16l6 4 6-4"/></svg>
+                    </span>
+                </div>
+                <span class="logo-text">StrideSync</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary btn-icon" onclick="exportData()" title="Export">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+                </button>
+                <button class="btn btn-secondary btn-icon" onclick="importData()" title="Import">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></span>
+                </button>
+                <button class="btn btn-secondary btn-icon" onclick="toggleSettings()" title="Settings">
+                    <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                </button>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+                    <span class="hidden-mobile">Add</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Countdown Banner -->
+        <div class="countdown" id="countdown-banner">
+            <div class="countdown-info">
+                <h2 id="race-title">Race Day</h2>
+                <p id="race-subtitle">Half Marathon - 21.1km</p>
+            </div>
+            <div class="countdown-timer">
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="countdown-days">--</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="countdown-hours">--</div>
+                    <div class="countdown-label">Hrs</div>
+                </div>
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="countdown-mins">--</div>
+                    <div class="countdown-label">Min</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Distance</div>
+                <div class="stat-value"><span id="stat-distance">0</span> <span class="stat-unit">km</span></div>
+                <div class="stat-progress"><div class="stat-progress-bar" id="progress-distance"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Completed</div>
+                <div class="stat-value"><span id="stat-completed">0</span><span class="stat-unit" id="stat-total">/0</span></div>
+                <div class="stat-progress"><div class="stat-progress-bar" id="progress-completed"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Week</div>
+                <div class="stat-value"><span id="stat-week">1</span> <span class="stat-unit">of 8</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Streak</div>
+                <div class="stat-value"><span id="stat-streak">0</span> <span class="stat-unit">days</span></div>
+            </div>
+        </div>
+
+        <!-- Tabs (Desktop) -->
+        <div class="tabs" id="desktop-tabs">
+            <button class="tab active" onclick="switchView('schedule')">
+                <span class="icon icon-sm"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+                Schedule
+            </button>
+            <button class="tab" onclick="switchView('calendar')">
+                <span class="icon icon-sm"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg></span>
+                Calendar
+            </button>
+            <button class="tab" onclick="switchView('analytics')">
+                <span class="icon icon-sm"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+                Analytics
+            </button>
+        </div>
+
+        <!-- Schedule View -->
+        <div id="schedule-view" class="view active">
+            <div class="weeks" id="weeks-container"></div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" class="view">
+            <div class="calendar-header">
+                <h2 class="calendar-title" id="calendar-month">January 2026</h2>
+                <div class="calendar-nav">
+                    <button class="btn btn-secondary btn-icon btn-sm" onclick="navigateCalendar(-1)">
+                        <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="goToToday()">Today</button>
+                    <button class="btn btn-secondary btn-icon btn-sm" onclick="navigateCalendar(1)">
+                        <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+                    </button>
+                </div>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analytics-view" class="view">
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Weekly Distance</div>
+                    <canvas id="distance-chart" class="chart-canvas"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Activity Breakdown</div>
+                    <canvas id="activity-chart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchView('schedule')" data-view="schedule">
+            <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            Schedule
+        </button>
+        <button class="nav-item" onclick="switchView('calendar')" data-view="calendar">
+            <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+            Calendar
+        </button>
+        <button class="nav-item" onclick="switchView('analytics')" data-view="analytics">
+            <span class="icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            Analytics
+        </button>
+        <button class="nav-item" onclick="toggleSettings()" data-view="settings">
+            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+            Settings
+        </button>
+    </nav>
+
+    <!-- Activity Modal -->
+    <div class="modal-overlay" id="activity-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Add Activity</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="activity-id">
+                <input type="hidden" id="activity-date-hidden">
+
+                <div class="form-group" id="date-picker-group" style="display: none;">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="activity-date-picker">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Activity Name</label>
+                    <input type="text" class="form-input" id="activity-name" placeholder="e.g., Morning Run">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" id="activity-type">
+                            <option value="run">Run</option>
+                            <option value="swim">Swim/Recovery</option>
+                            <option value="rest">Rest</option>
+                            <option value="race">Race</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <select class="form-select" id="activity-time">
+                            <option value="morning">Morning</option>
+                            <option value="evening">Evening</option>
+                            <option value="anytime">Anytime</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Distance (km)</label>
+                        <input type="number" class="form-input" id="activity-distance" placeholder="0" min="0" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (min)</label>
+                        <input type="number" class="form-input" id="activity-duration" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="activity-notes" placeholder="Optional notes..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="delete-btn" style="display: none;" onclick="deleteActivity()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveActivity()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="modal-close" onclick="toggleSettings()">
+                <span class="icon"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+            </button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-section">
+                <div class="settings-section-title">Theme</div>
+                <div class="theme-options" id="theme-options"></div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Accent Color</div>
+                <div class="accent-colors" id="accent-colors"></div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Race Details</div>
+                <div class="form-group">
+                    <label class="form-label">Race Date</label>
+                    <input type="date" class="form-input" id="race-date" value="2026-03-08">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Race Name</label>
+                    <input type="text" class="form-input" id="race-name" value="Half Marathon">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Display</div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Show countdown</span>
+                    <div class="toggle active" id="toggle-countdown" onclick="toggleOption('showCountdown')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Collapse past weeks</span>
+                    <div class="toggle" id="toggle-collapse" onclick="toggleOption('collapsePast')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Data</div>
+                <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="resetToDefault()">
+                    <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
+                    Reset to Default
+                </button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="clearAllData()">
+                    <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+                    Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file" accept=".json" style="display: none;">
+
+    <script>
+        // ========================================
+        // DATA & CONSTANTS
+        // ========================================
+
+        const DEFAULT_PLAN = [
+            // Week 1: Jan 12-18
+            { week: 1, date: '2026-01-12', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 1, date: '2026-01-12', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 1, date: '2026-01-14', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 1, date: '2026-01-14', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 1, date: '2026-01-16', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 1, date: '2026-01-16', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 1, date: '2026-01-18', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 2: Jan 19-25
+            { week: 2, date: '2026-01-19', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-19', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-20', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 2, date: '2026-01-21', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-21', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-22', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 2, date: '2026-01-23', time: 'morning', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-23', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 2, date: '2026-01-25', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 3: Jan 26 - Feb 1
+            { week: 3, date: '2026-01-26', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 3, date: '2026-01-26', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 3, date: '2026-01-28', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 3, date: '2026-01-28', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 3, date: '2026-01-30', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 3, date: '2026-01-30', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 3, date: '2026-02-01', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 4: Feb 2-8
+            { week: 4, date: '2026-02-02', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 4, date: '2026-02-02', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 4, date: '2026-02-03', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 4, date: '2026-02-05', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 4, date: '2026-02-06', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 4, date: '2026-02-06', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 4, date: '2026-02-08', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 5: Feb 9-15
+            { week: 5, date: '2026-02-09', time: 'morning', name: '14k Run', type: 'run', distance: 14 },
+            { week: 5, date: '2026-02-09', time: 'evening', name: '7k Run', type: 'run', distance: 7 },
+            { week: 5, date: '2026-02-10', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 5, date: '2026-02-12', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 5, date: '2026-02-15', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 6: Feb 16-22
+            { week: 6, date: '2026-02-16', time: 'morning', name: '21k Long Run', type: 'run', distance: 21 },
+            { week: 6, date: '2026-02-16', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 6, date: '2026-02-19', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 6, date: '2026-02-22', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 7: Feb 23 - Mar 1 (Taper)
+            { week: 7, date: '2026-02-23', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 7, date: '2026-02-25', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 7, date: '2026-02-27', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 7, date: '2026-03-01', time: 'morning', name: 'Swim/Sauna', type: 'swim' },
+
+            // Week 8: Mar 2-8 (Race Week)
+            { week: 8, date: '2026-03-02', time: 'evening', name: 'Swim/Sauna', type: 'swim' },
+            { week: 8, date: '2026-03-08', time: 'morning', name: 'RACE DAY!', type: 'race', distance: 21.1 }
+        ];
+
+        const WEEKS = {
+            1: { start: '2026-01-12', end: '2026-01-18', focus: 'Building Base' },
+            2: { start: '2026-01-19', end: '2026-01-25', focus: 'Double Sessions' },
+            3: { start: '2026-01-26', end: '2026-02-01', focus: 'Distance Increase' },
+            4: { start: '2026-02-02', end: '2026-02-08', focus: 'Mixed Training' },
+            5: { start: '2026-02-09', end: '2026-02-15', focus: 'Peak Week' },
+            6: { start: '2026-02-16', end: '2026-02-22', focus: 'Long Run Week' },
+            7: { start: '2026-02-23', end: '2026-03-01', focus: 'Taper Week' },
+            8: { start: '2026-03-02', end: '2026-03-08', focus: 'Race Week' }
+        };
+
+        const THEMES = [
+            { id: 'midnight', name: 'Midnight', bg: '#0a0a0f', accent: '#6366f1' },
+            { id: 'light', name: 'Light', bg: '#f8fafc', accent: '#6366f1' },
+            { id: 'dim', name: 'Dim', bg: '#15202b', accent: '#6366f1' },
+            { id: 'oled', name: 'OLED', bg: '#000000', accent: '#6366f1' }
+        ];
+
+        const ACCENTS = [
+            '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f59e0b',
+            '#22c55e', '#06b6d4', '#3b82f6', '#14b8a6', '#f97316'
+        ];
+
+        // ========================================
+        // STATE
+        // ========================================
+
+        let state = {
+            activities: [],
+            completedIds: new Set(),
+            settings: {
+                theme: 'midnight',
+                accent: '#6366f1',
+                showCountdown: true,
+                collapsePast: false,
+                raceDate: '2026-03-08',
+                raceName: 'Half Marathon'
+            },
+            currentView: 'schedule',
+            calendarMonth: new Date(2026, 0, 1)
+        };
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        function init() {
+            loadState();
+            applyTheme();
+            renderAll();
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+
+            // Event listeners
+            document.getElementById('import-file').addEventListener('change', handleImport);
+            document.getElementById('race-date').addEventListener('change', e => {
+                state.settings.raceDate = e.target.value;
+                saveState();
+                updateCountdown();
+            });
+            document.getElementById('race-name').addEventListener('change', e => {
+                state.settings.raceName = e.target.value;
+                saveState();
+                updateCountdown();
+            });
+
+            // Register service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+            }
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('stridesync-data');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.activities = parsed.activities || [];
+                state.completedIds = new Set(parsed.completedIds || []);
+                state.settings = { ...state.settings, ...parsed.settings };
+            } else {
+                state.activities = DEFAULT_PLAN.map((a, i) => ({ ...a, id: `act-${i}` }));
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('stridesync-data', JSON.stringify({
+                activities: state.activities,
+                completedIds: Array.from(state.completedIds),
+                settings: state.settings
+            }));
+        }
+
+        // ========================================
+        // RENDERING
+        // ========================================
+
+        function renderAll() {
+            renderSchedule();
+            renderStats();
+            renderThemeOptions();
+            renderAccentColors();
+            updateSettingsUI();
+            if (state.currentView === 'calendar') renderCalendar();
+            if (state.currentView === 'analytics') renderAnalytics();
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('weeks-container');
+            container.innerHTML = '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let week = 1; week <= 8; week++) {
+                const info = WEEKS[week];
+                const activities = state.activities.filter(a => a.week === week);
+                const completed = activities.filter(a => state.completedIds.has(a.id)).length;
+                const distance = activities.reduce((sum, a) => sum + (a.distance || 0), 0);
+
+                const weekStart = new Date(info.start);
+                const weekEnd = new Date(info.end);
+                const isPast = weekEnd < today;
+                const isCurrent = today >= weekStart && today <= weekEnd;
+
+                const card = document.createElement('div');
+                card.className = `week-card${state.settings.collapsePast && isPast ? ' collapsed' : ''}`;
+                card.innerHTML = `
+                    <div class="week-header" onclick="toggleWeek(this)">
+                        <div class="week-title">
+                            <div class="week-number">${week}</div>
+                            <div class="week-info">
+                                <h3>Week ${week}${isCurrent ? ' (Current)' : ''}</h3>
+                                <p>${info.focus} · ${formatDateRange(info.start, info.end)}</p>
+                            </div>
+                        </div>
+                        <div class="week-meta">
+                            <div class="week-stat">
+                                <div class="week-stat-value">${distance}km</div>
+                                <div class="week-stat-label">Distance</div>
+                            </div>
+                            <div class="week-stat">
+                                <div class="week-stat-value">${completed}/${activities.length}</div>
+                                <div class="week-stat-label">Done</div>
+                            </div>
+                            <span class="week-toggle icon icon-sm"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                        </div>
+                    </div>
+                    <div class="week-body">
+                        <div class="days">${renderDays(week, info)}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function renderDays(week, info) {
+            const days = [];
+            const start = new Date(info.start);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(start);
+                date.setDate(start.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const activities = state.activities.filter(a => a.date === dateStr);
+
+                const isToday = date.toDateString() === today.toDateString();
+                const isPast = date < today;
+                const isRaceDay = dateStr === state.settings.raceDate;
+                const dayNum = Math.floor((date - new Date('2026-01-12')) / 86400000) + 2;
+
+                let cls = 'day-card';
+                if (isToday) cls += ' today';
+                if (isPast) cls += ' past';
+                if (isRaceDay) cls += ' race-day';
+
+                days.push(`
+                    <div class="${cls}" data-date="${dateStr}">
+                        <div class="day-header">
+                            <div>
+                                <div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                                <div class="day-date">${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                            </div>
+                            <div class="day-number">${dayNum}</div>
+                        </div>
+                        <div class="day-activities">
+                            ${activities.map(a => renderActivity(a)).join('')}
+                            <button class="add-activity" onclick="openAddModal('${dateStr}', ${week})">
+                                <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                `);
+            }
+            return days.join('');
+        }
+
+        function renderActivity(a) {
+            const done = state.completedIds.has(a.id);
+            return `
+                <div class="activity ${a.type}${done ? ' completed' : ''}" onclick="openEditModal('${a.id}')">
+                    <div class="activity-check${done ? ' checked' : ''}" onclick="event.stopPropagation(); toggleComplete('${a.id}')">
+                        ${done ? '<span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>' : ''}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-time">${a.time || 'anytime'}</div>
+                        <div class="activity-name">${a.name}</div>
+                    </div>
+                    ${a.distance ? `<div class="activity-distance">${a.distance}km</div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderStats() {
+            const total = state.activities.length;
+            const completed = state.activities.filter(a => state.completedIds.has(a.id)).length;
+            const totalDist = state.activities.reduce((s, a) => s + (a.distance || 0), 0);
+            const completedDist = state.activities.filter(a => state.completedIds.has(a.id)).reduce((s, a) => s + (a.distance || 0), 0);
+
+            document.getElementById('stat-distance').textContent = totalDist.toFixed(0);
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-total').textContent = `/${total}`;
+
+            const today = new Date();
+            let week = 1;
+            for (let w = 1; w <= 8; w++) {
+                if (today <= new Date(WEEKS[w].end)) { week = w; break; }
+            }
+            document.getElementById('stat-week').textContent = week;
+            document.getElementById('stat-streak').textContent = calculateStreak();
+
+            document.getElementById('progress-distance').style.width = `${(completedDist / totalDist) * 100}%`;
+            document.getElementById('progress-completed').style.width = `${(completed / total) * 100}%`;
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 100; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayActs = state.activities.filter(a => a.date === dateStr);
+                if (!dayActs.length) continue;
+                if (dayActs.every(a => state.completedIds.has(a.id))) streak++;
+                else if (i > 0) break;
+            }
+            return streak;
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const year = state.calendarMonth.getFullYear();
+            const month = state.calendarMonth.getMonth();
+
+            document.getElementById('calendar-month').textContent =
+                state.calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay() || 7;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let html = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                .map(d => `<div class="calendar-day-header">${d}</div>`).join('');
+
+            // Previous month
+            for (let i = 1; i < startDay; i++) {
+                const d = new Date(year, month, 1 - (startDay - i));
+                html += renderCalendarDay(d, true, today);
+            }
+
+            // Current month
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+                html += renderCalendarDay(new Date(year, month, d), false, today);
+            }
+
+            // Next month
+            const remaining = 7 - ((startDay - 1 + lastDay.getDate()) % 7);
+            if (remaining < 7) {
+                for (let i = 1; i <= remaining; i++) {
+                    html += renderCalendarDay(new Date(year, month + 1, i), true, today);
+                }
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function renderCalendarDay(date, other, today) {
+            const dateStr = date.toISOString().split('T')[0];
+            const acts = state.activities.filter(a => a.date === dateStr);
+            const isToday = date.toDateString() === today.toDateString();
+
+            let cls = 'calendar-day';
+            if (other) cls += ' other-month';
+            if (isToday) cls += ' today';
+
+            const actHtml = acts.slice(0, 3).map(a => {
+                const done = state.completedIds.has(a.id);
+                return `<div class="calendar-activity ${a.type}${done ? ' completed' : ''}">${a.name}</div>`;
+            }).join('');
+
+            return `
+                <div class="${cls}" onclick="showDayDetails('${dateStr}')">
+                    <div class="calendar-day-number">${date.getDate()}</div>
+                    <div class="calendar-activities">${actHtml}${acts.length > 3 ? `<div class="calendar-activity">+${acts.length - 3} more</div>` : ''}</div>
+                </div>
+            `;
+        }
+
+        function renderAnalytics() {
+            // Weekly distance
+            const distCtx = document.getElementById('distance-chart').getContext('2d');
+            const weeklyDist = [];
+            for (let w = 1; w <= 8; w++) {
+                weeklyDist.push(state.activities.filter(a => a.week === w).reduce((s, a) => s + (a.distance || 0), 0));
+            }
+
+            distCtx.clearRect(0, 0, distCtx.canvas.width, distCtx.canvas.height);
+            const maxDist = Math.max(...weeklyDist, 1);
+            const barW = 30, gap = 15, h = 160;
+
+            weeklyDist.forEach((d, i) => {
+                const x = i * (barW + gap) + 25;
+                const barH = (d / maxDist) * h;
+                const y = h - barH + 15;
+
+                distCtx.fillStyle = state.settings.accent;
+                distCtx.beginPath();
+                distCtx.roundRect(x, y, barW, barH, 4);
+                distCtx.fill();
+
+                distCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted');
+                distCtx.font = '11px Inter';
+                distCtx.textAlign = 'center';
+                distCtx.fillText(`W${i + 1}`, x + barW / 2, h + 30);
+                if (d > 0) distCtx.fillText(`${d}`, x + barW / 2, y - 5);
+            });
+
+            // Activity breakdown
+            const actCtx = document.getElementById('activity-chart').getContext('2d');
+            const types = { run: 0, swim: 0, rest: 0, race: 0 };
+            state.activities.forEach(a => types[a.type || 'run']++);
+
+            actCtx.clearRect(0, 0, actCtx.canvas.width, actCtx.canvas.height);
+            const total = Object.values(types).reduce((a, b) => a + b, 0);
+            let angle = -Math.PI / 2;
+            const cx = 80, cy = 90, r = 60;
+            const colors = { run: state.settings.accent, swim: '#888', rest: '#555', race: '#fff' };
+
+            Object.entries(types).forEach(([type, count]) => {
+                if (!count) return;
+                const slice = (count / total) * 2 * Math.PI;
+                actCtx.beginPath();
+                actCtx.moveTo(cx, cy);
+                actCtx.arc(cx, cy, r, angle, angle + slice);
+                actCtx.closePath();
+                actCtx.fillStyle = colors[type];
+                actCtx.fill();
+                angle += slice;
+            });
+
+            let ly = 30;
+            Object.entries(types).forEach(([type, count]) => {
+                if (!count) return;
+                actCtx.fillStyle = colors[type];
+                actCtx.fillRect(170, ly, 12, 12);
+                actCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary');
+                actCtx.font = '12px Inter';
+                actCtx.fillText(`${type} (${count})`, 190, ly + 10);
+                ly += 25;
+            });
+        }
+
+        // ========================================
+        // INTERACTIONS
+        // ========================================
+
+        function toggleWeek(header) {
+            header.parentElement.classList.toggle('collapsed');
+        }
+
+        function toggleComplete(id) {
+            if (state.completedIds.has(id)) state.completedIds.delete(id);
+            else state.completedIds.add(id);
+            saveState();
+            renderAll();
+            showToast('Activity updated', 'success');
+        }
+
+        function openAddModal(date = null, week = null) {
+            document.getElementById('modal-title').textContent = 'Add Activity';
+            document.getElementById('activity-id').value = '';
+            document.getElementById('activity-date-hidden').value = date || '';
+            document.getElementById('activity-name').value = '';
+            document.getElementById('activity-type').value = 'run';
+            document.getElementById('activity-time').value = 'morning';
+            document.getElementById('activity-distance').value = '';
+            document.getElementById('activity-duration').value = '';
+            document.getElementById('activity-notes').value = '';
+            document.getElementById('delete-btn').style.display = 'none';
+
+            const dateGroup = document.getElementById('date-picker-group');
+            if (!date) {
+                dateGroup.style.display = 'block';
+                document.getElementById('activity-date-picker').value = new Date().toISOString().split('T')[0];
+            } else {
+                dateGroup.style.display = 'none';
+            }
+
+            document.getElementById('activity-modal').classList.add('active');
+        }
+
+        function openEditModal(id) {
+            const a = state.activities.find(x => x.id === id);
+            if (!a) return;
+
+            document.getElementById('modal-title').textContent = 'Edit Activity';
+            document.getElementById('activity-id').value = id;
+            document.getElementById('activity-date-hidden').value = a.date;
+            document.getElementById('activity-name').value = a.name;
+            document.getElementById('activity-type').value = a.type || 'run';
+            document.getElementById('activity-time').value = a.time || 'morning';
+            document.getElementById('activity-distance').value = a.distance || '';
+            document.getElementById('activity-duration').value = a.duration || '';
+            document.getElementById('activity-notes').value = a.notes || '';
+            document.getElementById('delete-btn').style.display = 'block';
+            document.getElementById('date-picker-group').style.display = 'none';
+
+            document.getElementById('activity-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('activity-modal').classList.remove('active');
+        }
+
+        function saveActivity() {
+            const id = document.getElementById('activity-id').value;
+            let date = document.getElementById('activity-date-hidden').value;
+            const picker = document.getElementById('activity-date-picker');
+            if (!date && picker.value) date = picker.value;
+
+            const name = document.getElementById('activity-name').value.trim();
+            const type = document.getElementById('activity-type').value;
+            const time = document.getElementById('activity-time').value;
+            const distance = parseFloat(document.getElementById('activity-distance').value) || 0;
+            const duration = parseInt(document.getElementById('activity-duration').value) || 0;
+            const notes = document.getElementById('activity-notes').value.trim();
+
+            if (!name || !date) {
+                showToast('Please fill required fields', 'error');
+                return;
+            }
+
+            let week = 1;
+            for (let w = 1; w <= 8; w++) {
+                const d = new Date(date);
+                if (d >= new Date(WEEKS[w].start) && d <= new Date(WEEKS[w].end)) { week = w; break; }
+            }
+
+            if (id) {
+                const idx = state.activities.findIndex(a => a.id === id);
+                if (idx !== -1) state.activities[idx] = { ...state.activities[idx], name, type, time, distance, duration, notes, date, week };
+            } else {
+                state.activities.push({ id: `act-${Date.now()}`, name, type, time, distance, duration, notes, date, week });
+            }
+
+            saveState();
+            closeModal();
+            renderAll();
+            showToast(id ? 'Activity updated' : 'Activity added', 'success');
+        }
+
+        function deleteActivity() {
+            const id = document.getElementById('activity-id').value;
+            if (!id) return;
+            state.activities = state.activities.filter(a => a.id !== id);
+            state.completedIds.delete(id);
+            saveState();
+            closeModal();
+            renderAll();
+            showToast('Activity deleted', 'info');
+        }
+
+        // ========================================
+        // VIEWS
+        // ========================================
+
+        function switchView(view) {
+            state.currentView = view;
+
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const tab = document.querySelector(`.tab:nth-child(${view === 'schedule' ? 1 : view === 'calendar' ? 2 : 3})`);
+            const nav = document.querySelector(`.nav-item[data-view="${view}"]`);
+            if (tab) tab.classList.add('active');
+            if (nav) nav.classList.add('active');
+
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`${view}-view`).classList.add('active');
+
+            if (view === 'calendar') renderCalendar();
+            if (view === 'analytics') renderAnalytics();
+        }
+
+        function navigateCalendar(dir) {
+            state.calendarMonth.setMonth(state.calendarMonth.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            state.calendarMonth = new Date();
+            renderCalendar();
+        }
+
+        function showDayDetails(dateStr) {
+            for (let w = 1; w <= 8; w++) {
+                const d = new Date(dateStr);
+                if (d >= new Date(WEEKS[w].start) && d <= new Date(WEEKS[w].end)) {
+                    switchView('schedule');
+                    setTimeout(() => {
+                        const day = document.querySelector(`[data-date="${dateStr}"]`);
+                        if (day) {
+                            day.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            day.style.animation = 'none';
+                            day.offsetHeight;
+                            day.style.animation = 'pulse 0.5s ease 2';
+                        }
+                    }, 100);
+                    break;
+                }
+            }
+        }
+
+        // ========================================
+        // SETTINGS
+        // ========================================
+
+        function toggleSettings() {
+            document.getElementById('settings-panel').classList.toggle('active');
+        }
+
+        function renderThemeOptions() {
+            document.getElementById('theme-options').innerHTML = THEMES.map(t => `
+                <div class="theme-option${state.settings.theme === t.id ? ' active' : ''}" onclick="setTheme('${t.id}')">
+                    <div class="theme-preview">
+                        <div class="theme-preview-bg" style="background: ${t.bg}"></div>
+                        <div class="theme-preview-accent" style="background: ${t.accent}"></div>
+                    </div>
+                    <span class="theme-name">${t.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderAccentColors() {
+            document.getElementById('accent-colors').innerHTML = ACCENTS.map(c => `
+                <div class="accent-swatch${state.settings.accent === c ? ' active' : ''}"
+                     style="background: ${c}" onclick="setAccent('${c}')"></div>
+            `).join('');
+        }
+
+        function setTheme(id) {
+            state.settings.theme = id;
+            saveState();
+            applyTheme();
+            renderThemeOptions();
+        }
+
+        function setAccent(color) {
+            state.settings.accent = color;
+            saveState();
+            applyTheme();
+            renderAccentColors();
+            if (state.currentView === 'analytics') renderAnalytics();
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', state.settings.theme);
+            document.documentElement.style.setProperty('--accent', state.settings.accent);
+            document.documentElement.style.setProperty('--accent-hover', adjustColor(state.settings.accent, 20));
+            document.documentElement.style.setProperty('--accent-muted', state.settings.accent + '30');
+            document.documentElement.style.setProperty('--activity-run', state.settings.accent);
+
+            // Update theme-color meta
+            const theme = THEMES.find(t => t.id === state.settings.theme);
+            document.querySelector('meta[name="theme-color"]').content = theme ? theme.bg : '#0a0a0f';
+        }
+
+        function adjustColor(hex, percent) {
+            const num = parseInt(hex.slice(1), 16);
+            const r = Math.min(255, ((num >> 16) & 0xff) + percent);
+            const g = Math.min(255, ((num >> 8) & 0xff) + percent);
+            const b = Math.min(255, (num & 0xff) + percent);
+            return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+        }
+
+        function toggleOption(opt) {
+            state.settings[opt] = !state.settings[opt];
+            saveState();
+            updateSettingsUI();
+            renderAll();
+        }
+
+        function updateSettingsUI() {
+            document.getElementById('toggle-countdown').classList.toggle('active', state.settings.showCountdown);
+            document.getElementById('toggle-collapse').classList.toggle('active', state.settings.collapsePast);
+            document.getElementById('countdown-banner').style.display = state.settings.showCountdown ? 'flex' : 'none';
+            document.getElementById('race-date').value = state.settings.raceDate;
+            document.getElementById('race-name').value = state.settings.raceName;
+        }
+
+        // ========================================
+        // COUNTDOWN
+        // ========================================
+
+        function updateCountdown() {
+            const race = new Date(state.settings.raceDate + 'T09:00:00');
+            const now = new Date();
+            const diff = race - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / 86400000);
+                const hours = Math.floor((diff % 86400000) / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('countdown-mins').textContent = mins.toString().padStart(2, '0');
+            } else {
+                document.getElementById('countdown-days').textContent = '--';
+                document.getElementById('countdown-hours').textContent = '--';
+                document.getElementById('countdown-mins').textContent = '--';
+            }
+
+            document.getElementById('race-title').textContent =
+                new Date(state.settings.raceDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('race-subtitle').textContent = `${state.settings.raceName} - 21.1km`;
+        }
+
+        // ========================================
+        // IMPORT/EXPORT
+        // ========================================
+
+        function exportData() {
+            const data = {
+                activities: state.activities,
+                completedIds: Array.from(state.completedIds),
+                settings: state.settings,
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stridesync-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported', 'success');
+        }
+
+        function importData() {
+            document.getElementById('import-file').click();
+        }
+
+        function handleImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    state.activities = data.activities || [];
+                    state.completedIds = new Set(data.completedIds || []);
+                    state.settings = { ...state.settings, ...data.settings };
+                    saveState();
+                    applyTheme();
+                    renderAll();
+                    showToast('Data imported', 'success');
+                } catch { showToast('Import failed', 'error'); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        function resetToDefault() {
+            if (confirm('Reset to default training plan?')) {
+                state.activities = DEFAULT_PLAN.map((a, i) => ({ ...a, id: `act-${i}` }));
+                saveState();
+                renderAll();
+                showToast('Reset complete', 'success');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Clear all data? This cannot be undone.')) {
+                localStorage.removeItem('stridesync-data');
+                location.reload();
+            }
+        }
+
+        // ========================================
+        // UTILITIES
+        // ========================================
+
+        function formatDateRange(start, end) {
+            const s = new Date(start);
+            const e = new Date(end);
+            return `${s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${e.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="icon icon-sm">
+                    ${type === 'success' ? '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>' :
+                      type === 'error' ? '<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>' :
+                      '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'}
+                </span>
+                <span>${msg}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
