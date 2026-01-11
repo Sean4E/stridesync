@@ -893,6 +893,10 @@
             transition: transform 0.2s ease, background 0.2s ease;
             -webkit-tap-highlight-color: transparent;
             touch-action: pan-y pinch-zoom;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
             z-index: 2;
         }
 
@@ -901,6 +905,18 @@
         }
 
         /* Drag and drop rescheduling */
+        body.is-dragging {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: grabbing !important;
+        }
+
+        body.is-dragging * {
+            cursor: grabbing !important;
+        }
+
         .activity.dragging {
             opacity: 0.5;
             transform: scale(0.95);
@@ -2487,6 +2503,9 @@
         function startDrag(x, y) {
             dragState.isDragging = true;
 
+            // Prevent text selection while dragging
+            document.body.classList.add('is-dragging');
+
             const activity = state.activities.find(a => a.id === dragState.activityId);
             if (!activity) return;
 
@@ -2544,6 +2563,9 @@
         }
 
         function endDrag() {
+            // Re-enable text selection
+            document.body.classList.remove('is-dragging');
+
             // Remove ghost
             if (dragState.ghost) {
                 dragState.ghost.remove();
