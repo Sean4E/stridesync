@@ -336,9 +336,18 @@
             backdrop-filter: blur(10px);
         }
 
+        [data-theme="light"] .btn-ghost {
+            background: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.1);
+        }
+
         .btn-ghost:hover {
             background: var(--bg-card-hover);
             border-color: var(--glass-border-hover);
+        }
+
+        [data-theme="light"] .btn-ghost:hover {
+            background: rgba(0,0,0,0.08);
         }
 
         .btn-danger {
@@ -448,9 +457,20 @@
             transition: all 0.2s ease;
         }
 
+        [data-theme="light"] .stat-card {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
         .stat-card:hover {
             background: var(--bg-card-hover);
             transform: translateY(-2px);
+        }
+
+        [data-theme="light"] .stat-card:hover {
+            background: #ffffff;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         }
 
         .stat-label {
@@ -552,6 +572,12 @@
             backdrop-filter: blur(20px);
         }
 
+        [data-theme="light"] .bottom-nav {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+        }
+
         @media (min-width: 768px) {
             .bottom-nav { display: none; }
         }
@@ -596,6 +622,12 @@
             border-radius: 20px;
             overflow: hidden;
             backdrop-filter: blur(20px);
+        }
+
+        [data-theme="light"] .week-card {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
 
         .week-header {
@@ -719,12 +751,16 @@
             transition: background 0.2s ease;
         }
 
+        [data-theme="light"] .day-card {
+            background: #ffffff;
+        }
+
         .day-card:hover {
             background: rgba(255,255,255,0.03);
         }
 
         [data-theme="light"] .day-card:hover {
-            background: rgba(0,0,0,0.02);
+            background: #f8fafc;
         }
 
         .day-card.today {
@@ -1064,6 +1100,17 @@
             border-radius: 24px 24px 0 0;
             overflow: hidden;
             animation: modalSlideUp 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .modal {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        [data-theme="light"] .modal-overlay {
+            background: rgba(0,0,0,0.5);
         }
 
         @media (min-width: 640px) {
@@ -1152,7 +1199,7 @@
         .form-textarea {
             width: 100%;
             padding: 12px 14px;
-            background: rgba(255,255,255,0.05);
+            background: var(--bg-tertiary);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: var(--text-primary);
@@ -1164,7 +1211,21 @@
         [data-theme="light"] .form-input,
         [data-theme="light"] .form-select,
         [data-theme="light"] .form-textarea {
-            background: rgba(0,0,0,0.03);
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.12);
+        }
+
+        [data-theme="dim"] .form-input,
+        [data-theme="dim"] .form-select,
+        [data-theme="dim"] .form-textarea {
+            background: #1c2938;
+        }
+
+        [data-theme="oled"] .form-input,
+        [data-theme="oled"] .form-select,
+        [data-theme="oled"] .form-textarea {
+            background: #0a0a0a;
+            border-color: rgba(255,255,255,0.1);
         }
 
         .form-input:focus,
@@ -1182,6 +1243,53 @@
             background-repeat: no-repeat;
             background-position: right 12px center;
             padding-right: 40px;
+        }
+
+        [data-theme="light"] .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        }
+
+        /* Style native select options for dark themes */
+        .form-select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px;
+        }
+
+        [data-theme="midnight"] .form-select option {
+            background: #12121a;
+            color: #ffffff;
+        }
+
+        [data-theme="light"] .form-select option {
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        [data-theme="dim"] .form-select option {
+            background: #1c2938;
+            color: #ffffff;
+        }
+
+        [data-theme="oled"] .form-select option {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        /* Date input specific styling */
+        .form-input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .form-input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.3);
+        }
+
+        /* Placeholder styling */
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-muted);
         }
 
         .form-textarea {
@@ -1202,10 +1310,16 @@
             position: fixed;
             inset: 0;
             background: var(--bg-secondary);
+            color: var(--text-primary);
             z-index: 300;
             transform: translateX(100%);
             transition: transform 0.3s ease;
             overflow-y: auto;
+        }
+
+        [data-theme="light"] .settings-panel {
+            background: #ffffff;
+            box-shadow: -4px 0 24px rgba(0,0,0,0.1);
         }
 
         .settings-panel.active { transform: translateX(0); }
@@ -1228,6 +1342,11 @@
             top: 0;
             background: var(--bg-secondary);
             z-index: 1;
+        }
+
+        [data-theme="light"] .settings-header {
+            background: #ffffff;
+            border-color: rgba(0,0,0,0.08);
         }
 
         .settings-body { padding: 20px 24px; }
