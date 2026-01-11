@@ -1,19 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#6366f1"/>
-      <stop offset="100%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.25)"/>
+      <stop offset="60%" style="stop-color:rgba(255,255,255,0)"/>
+    </linearGradient>
+    <!-- Wisp gradients for abstract effect -->
+    <linearGradient id="wisp1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0)"/>
+      <stop offset="50%" style="stop-color:rgba(255,255,255,0.4)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="wisp2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0)"/>
+      <stop offset="40%" style="stop-color:rgba(255,255,255,0.25)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
     </linearGradient>
   </defs>
-  <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="url(#grad)"/>
-  <!-- Stride lines forming abstract 'S' -->
-  <g fill="none" stroke="#fff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Top chevron -->
-    <path d="M160 160 L256 96 L352 160"/>
-    <!-- Middle line -->
-    <path d="M256 96 L256 416"/>
-    <!-- Bottom chevron -->
-    <path d="M160 352 L256 416 L352 352"/>
+
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Subtle shine overlay -->
+  <rect width="512" height="512" rx="108" fill="url(#shine)"/>
+
+  <!-- Abstract runner facing RIGHT with artistic wisps -->
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- Artistic flowing wisps (trailing motion) -->
+    <path d="M80 180 Q140 170 180 190" stroke="url(#wisp1)" stroke-width="8" opacity="0.7"/>
+    <path d="M60 220 Q130 200 200 230" stroke="url(#wisp2)" stroke-width="6" opacity="0.5"/>
+    <path d="M90 260 Q150 240 190 270" stroke="url(#wisp1)" stroke-width="5" opacity="0.35"/>
+    <path d="M70 300 Q120 280 160 310" stroke="url(#wisp2)" stroke-width="4" opacity="0.2"/>
+
+    <!-- Abstract speed particles -->
+    <circle cx="100" cy="200" r="4" fill="#fff" opacity="0.5"/>
+    <circle cx="120" cy="240" r="3" fill="#fff" opacity="0.35"/>
+    <circle cx="90" cy="280" r="2.5" fill="#fff" opacity="0.25"/>
+
+    <!-- Dynamic runner silhouette - FLIPPED to face RIGHT -->
+    <!-- Head -->
+    <circle cx="232" cy="120" r="36" stroke-width="0" fill="#fff"/>
+
+    <!-- Body/torso leaning forward (right) -->
+    <path d="M244 156 L292 280" stroke-width="28"/>
+
+    <!-- Front arm (pumping forward to right) -->
+    <path d="M260 190 L202 160 L172 200" stroke-width="24"/>
+
+    <!-- Back arm (trailing left) -->
+    <path d="M260 190 L332 230" stroke-width="24"/>
+
+    <!-- Front leg (extended right) -->
+    <path d="M292 280 L192 320 L132 280" stroke-width="28"/>
+
+    <!-- Back leg (bent, pushing off left) -->
+    <path d="M292 280 L372 340 L392 420" stroke-width="28"/>
   </g>
 </svg>
