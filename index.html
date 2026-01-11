@@ -268,13 +268,18 @@
         .logo-icon {
             width: 48px;
             height: 48px;
-            background: var(--gradient-accent);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow-glow);
-            color: white;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo-text h1 {
@@ -820,7 +825,46 @@
         /* ========================================
            ACTIVITY ITEMS
            ======================================== */
+        /* Swipe container */
+        .activity-swipe {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .activity-swipe:last-child {
+            margin-bottom: 0;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        .swipe-left {
+            left: 0;
+            background: var(--success);
+            color: white;
+        }
+
+        .swipe-right {
+            right: 0;
+            background: var(--accent);
+            color: white;
+        }
+
         .activity {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -829,8 +873,14 @@
             border-radius: 10px;
             border-left: 3px solid var(--run-color);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, background 0.2s ease;
             -webkit-tap-highlight-color: transparent;
+            touch-action: pan-y pinch-zoom;
+            z-index: 1;
+        }
+
+        .activity.swiping {
+            transition: none;
         }
 
         [data-theme="light"] .activity {
@@ -1424,6 +1474,49 @@
             box-shadow: 0 0 20px currentColor;
         }
 
+        /* Custom type items */
+        .custom-type-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .custom-type-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .custom-type-name {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .custom-type-delete {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--danger-muted);
+            border: none;
+            border-radius: 6px;
+            color: var(--danger);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-type-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
         .toggle-row {
             display: flex;
             align-items: center;
@@ -1526,9 +1619,7 @@
         <header class="header">
             <div class="logo">
                 <div class="logo-icon">
-                    <span class="icon icon-lg">
-                        <svg viewBox="0 0 24 24"><path d="M13 4v16M7 8l6-4 6 4M7 16l6 4 6-4"/></svg>
-                    </span>
+                    <img src="icons/icon.svg" alt="StrideSync" width="32" height="32" style="border-radius: 6px;">
                 </div>
                 <div class="logo-text">
                     <h1>StrideSync</h1>
@@ -1699,12 +1790,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Type</label>
-                        <select class="form-select" id="activity-type">
-                            <option value="run">Run</option>
-                            <option value="swim">Swim/Recovery</option>
-                            <option value="rest">Rest</option>
-                            <option value="race">Race</option>
-                        </select>
+                        <select class="form-select" id="activity-type"></select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Time</label>
@@ -1790,6 +1876,19 @@
                         <div class="toggle-knob"></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">Custom Activity Types</div>
+                <div id="custom-types-list" style="margin-bottom: 12px;"></div>
+                <div class="form-row" style="gap: 8px;">
+                    <input type="text" class="form-input" id="new-type-name" placeholder="Type name" style="flex: 1;">
+                    <input type="color" id="new-type-color" value="#6366f1" style="width: 48px; height: 44px; padding: 4px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer;">
+                </div>
+                <button class="btn btn-ghost" style="width: 100%; margin-top: 8px;" onclick="addCustomType()">
+                    <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+                    Add Type
+                </button>
             </div>
 
             <div class="settings-section">
@@ -1884,6 +1983,107 @@
 
         const ACCENTS = ['#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f59e0b', '#22c55e', '#06b6d4', '#3b82f6', '#14b8a6', '#f97316'];
 
+        // Default activity types
+        const DEFAULT_TYPES = [
+            { id: 'run', name: 'Run', icon: 'run', color: 'var(--accent)' },
+            { id: 'swim', name: 'Swim/Recovery', icon: 'swim', color: '#06b6d4' },
+            { id: 'rest', name: 'Rest', icon: 'rest', color: '#8b5cf6' },
+            { id: 'race', name: 'Race', icon: 'race', color: '#f43f5e' }
+        ];
+
+        // ========================================
+        // HAPTIC FEEDBACK
+        // ========================================
+        function haptic(type = 'light') {
+            if ('vibrate' in navigator) {
+                const patterns = {
+                    light: [10],
+                    medium: [20],
+                    heavy: [30],
+                    success: [10, 50, 20],
+                    error: [50, 30, 50]
+                };
+                navigator.vibrate(patterns[type] || patterns.light);
+            }
+        }
+
+        // ========================================
+        // SWIPE GESTURES
+        // ========================================
+        let swipeState = { startX: 0, startY: 0, currentX: 0, el: null, id: null };
+        const SWIPE_THRESHOLD = 80;
+
+        function initSwipeListeners() {
+            document.addEventListener('touchstart', handleTouchStart, { passive: true });
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            const swipeContainer = e.target.closest('.activity-swipe');
+            if (!swipeContainer) return;
+
+            const activity = swipeContainer.querySelector('.activity');
+            swipeState = {
+                startX: e.touches[0].clientX,
+                startY: e.touches[0].clientY,
+                currentX: 0,
+                el: activity,
+                id: swipeContainer.dataset.id
+            };
+        }
+
+        function handleTouchMove(e) {
+            if (!swipeState.el) return;
+
+            const deltaX = e.touches[0].clientX - swipeState.startX;
+            const deltaY = e.touches[0].clientY - swipeState.startY;
+
+            // If scrolling vertically, cancel swipe
+            if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaX) < 10) {
+                swipeState.el = null;
+                return;
+            }
+
+            // Prevent scroll when swiping horizontally
+            if (Math.abs(deltaX) > 10) {
+                e.preventDefault();
+            }
+
+            swipeState.currentX = deltaX;
+            swipeState.el.classList.add('swiping');
+
+            // Limit swipe distance with resistance
+            const maxSwipe = 120;
+            const resistance = 0.5;
+            let translateX = deltaX;
+            if (Math.abs(deltaX) > maxSwipe) {
+                translateX = (deltaX > 0 ? 1 : -1) * (maxSwipe + (Math.abs(deltaX) - maxSwipe) * resistance);
+            }
+
+            swipeState.el.style.transform = `translateX(${translateX}px)`;
+        }
+
+        function handleTouchEnd() {
+            if (!swipeState.el) return;
+
+            const deltaX = swipeState.currentX;
+            swipeState.el.classList.remove('swiping');
+            swipeState.el.style.transform = '';
+
+            if (deltaX > SWIPE_THRESHOLD) {
+                // Swipe right - toggle complete
+                haptic('success');
+                toggleComplete(swipeState.id);
+            } else if (deltaX < -SWIPE_THRESHOLD) {
+                // Swipe left - open edit
+                haptic('light');
+                openEditModal(swipeState.id);
+            }
+
+            swipeState = { startX: 0, startY: 0, currentX: 0, el: null, id: null };
+        }
+
         // ========================================
         // STATE
         // ========================================
@@ -1897,11 +2097,17 @@
                 showCountdown: true,
                 collapsePast: false,
                 raceDate: '2026-03-08',
-                raceName: 'Half Marathon'
+                raceName: 'Half Marathon',
+                customTypes: []
             },
             currentView: 'schedule',
             calendarMonth: new Date(2026, 0, 1)
         };
+
+        // Get all activity types (default + custom)
+        function getActivityTypes() {
+            return [...DEFAULT_TYPES, ...(state.settings.customTypes || [])];
+        }
 
         // ========================================
         // INIT
@@ -1912,6 +2118,7 @@
             renderAll();
             updateCountdown();
             setInterval(updateCountdown, 60000);
+            initSwipeListeners();
 
             document.getElementById('import-file').addEventListener('change', handleImport);
             document.getElementById('race-date').addEventListener('change', e => {
@@ -1958,6 +2165,7 @@
             renderStats();
             renderThemeOptions();
             renderAccentColors();
+            renderCustomTypes();
             updateSettingsUI();
             if (state.currentView === 'calendar') renderCalendar();
             if (state.currentView === 'analytics') renderAnalytics();
@@ -2055,16 +2263,22 @@
 
         function renderActivity(a) {
             const done = state.completedIds.has(a.id);
+            const customType = (state.settings.customTypes || []).find(t => t.id === a.type);
+            const customStyle = customType ? `border-left-color: ${customType.color}` : '';
             return `
-                <div class="activity ${a.type}${done ? ' completed' : ''}" onclick="openEditModal('${a.id}')">
-                    <div class="activity-check${done ? ' checked' : ''}" onclick="event.stopPropagation(); toggleComplete('${a.id}')">
-                        ${done ? '<span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>' : ''}
+                <div class="activity-swipe" data-id="${a.id}">
+                    <div class="swipe-actions swipe-left">${done ? 'Undo' : 'Done'}</div>
+                    <div class="swipe-actions swipe-right">Edit</div>
+                    <div class="activity ${a.type}${done ? ' completed' : ''}" data-id="${a.id}" style="${customStyle}">
+                        <div class="activity-check${done ? ' checked' : ''}" onclick="event.stopPropagation(); toggleComplete('${a.id}')">
+                            ${done ? '<span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>' : ''}
+                        </div>
+                        <div class="activity-content" onclick="openEditModal('${a.id}')">
+                            <div class="activity-time">${a.time || 'anytime'}</div>
+                            <div class="activity-name">${a.name}</div>
+                        </div>
+                        ${a.distance ? `<div class="activity-distance">${a.distance}km</div>` : ''}
                     </div>
-                    <div class="activity-content">
-                        <div class="activity-time">${a.time || 'anytime'}</div>
-                        <div class="activity-name">${a.name}</div>
-                    </div>
-                    ${a.distance ? `<div class="activity-distance">${a.distance}km</div>` : ''}
                 </div>
             `;
         }
@@ -2340,8 +2554,13 @@
         }
 
         function toggleComplete(id) {
-            if (state.completedIds.has(id)) state.completedIds.delete(id);
-            else state.completedIds.add(id);
+            if (state.completedIds.has(id)) {
+                state.completedIds.delete(id);
+                haptic('light');
+            } else {
+                state.completedIds.add(id);
+                haptic('success');
+            }
             saveState();
             renderAll();
             showToast('Activity updated', 'success');
@@ -2424,6 +2643,7 @@
                 state.activities.push({ id: `act-${Date.now()}`, name, type, time, distance, duration, notes, date, week });
             }
 
+            haptic('success');
             saveState();
             closeModal();
             renderAll();
@@ -2433,6 +2653,7 @@
         function deleteActivity() {
             const id = document.getElementById('activity-id').value;
             if (!id) return;
+            haptic('medium');
             state.activities = state.activities.filter(a => a.id !== id);
             state.completedIds.delete(id);
             saveState();
@@ -2515,6 +2736,77 @@
                 <div class="accent-swatch${state.settings.accent2 === c ? ' active' : ''}"
                      style="background: ${c}" onclick="setAccent2('${c}')"></div>
             `).join('');
+        }
+
+        // Custom activity types
+        function renderCustomTypes() {
+            const container = document.getElementById('custom-types-list');
+            if (!container) return;
+
+            const customTypes = state.settings.customTypes || [];
+            container.innerHTML = customTypes.map(t => `
+                <div class="custom-type-item">
+                    <div class="custom-type-color" style="background: ${t.color}"></div>
+                    <span class="custom-type-name">${t.name}</span>
+                    <button class="custom-type-delete" onclick="deleteCustomType('${t.id}')">
+                        <span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+                    </button>
+                </div>
+            `).join('');
+
+            // Update activity type dropdown
+            renderActivityTypeDropdown();
+        }
+
+        function renderActivityTypeDropdown() {
+            const select = document.getElementById('activity-type');
+            if (!select) return;
+
+            const types = getActivityTypes();
+            const currentValue = select.value;
+            select.innerHTML = types.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            if (types.find(t => t.id === currentValue)) {
+                select.value = currentValue;
+            }
+        }
+
+        function addCustomType() {
+            const nameInput = document.getElementById('new-type-name');
+            const colorInput = document.getElementById('new-type-color');
+
+            const name = nameInput.value.trim();
+            const color = colorInput.value;
+
+            if (!name) {
+                showToast('Enter a type name', 'error');
+                return;
+            }
+
+            const id = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+            // Check for duplicates
+            const allTypes = getActivityTypes();
+            if (allTypes.find(t => t.id === id)) {
+                showToast('Type already exists', 'error');
+                return;
+            }
+
+            if (!state.settings.customTypes) state.settings.customTypes = [];
+            state.settings.customTypes.push({ id, name, color, icon: 'custom' });
+
+            haptic('success');
+            saveState();
+            renderCustomTypes();
+            nameInput.value = '';
+            showToast('Type added', 'success');
+        }
+
+        function deleteCustomType(id) {
+            haptic('medium');
+            state.settings.customTypes = state.settings.customTypes.filter(t => t.id !== id);
+            saveState();
+            renderCustomTypes();
+            showToast('Type deleted', 'info');
         }
 
         function setAccent2(color) {
