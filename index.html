@@ -901,7 +901,9 @@
             filter: brightness(1.1);
         }
 
-        .activity.completed { opacity: 0.5; }
+        .activity.completed .activity-content,
+        .activity.completed .activity-check,
+        .activity.completed .activity-distance { opacity: 0.5; }
         .activity.completed .activity-name { text-decoration: line-through; }
 
         .activity.swim { border-left-color: var(--swim-color); }
