@@ -841,14 +841,16 @@
             position: absolute;
             top: 0;
             bottom: 0;
+            width: 80px;
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            font-size: 0.75rem;
+            justify-content: center;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             pointer-events: none;
+            z-index: 0;
         }
 
         .swipe-left {
@@ -869,14 +871,14 @@
             align-items: center;
             gap: 8px;
             padding: 8px 10px;
-            background: rgba(255,255,255,0.04);
+            background: var(--bg-secondary);
             border-radius: 10px;
             border-left: 3px solid var(--run-color);
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease;
             -webkit-tap-highlight-color: transparent;
             touch-action: pan-y pinch-zoom;
-            z-index: 1;
+            z-index: 2;
         }
 
         .activity.swiping {
@@ -884,16 +886,19 @@
         }
 
         [data-theme="light"] .activity {
-            background: rgba(0,0,0,0.03);
+            background: #ffffff;
+        }
+
+        [data-theme="dim"] .activity {
+            background: #1c2938;
+        }
+
+        [data-theme="oled"] .activity {
+            background: #0a0a0a;
         }
 
         .activity:hover {
-            background: rgba(255,255,255,0.08);
-            transform: translateX(4px);
-        }
-
-        [data-theme="light"] .activity:hover {
-            background: rgba(0,0,0,0.06);
+            filter: brightness(1.1);
         }
 
         .activity.completed { opacity: 0.5; }
@@ -903,7 +908,6 @@
         .activity.rest { border-left-color: var(--rest-color); }
         .activity.race {
             border-left-color: var(--race-color);
-            background: rgba(244, 63, 94, 0.1);
         }
 
         .activity-check {
